@@ -1,0 +1,15 @@
+exclude:
+  - client/
+  - server/
+  - shared/
+  - node_modules/
+  - dist/
+  - docs/
+  - "*.ts"
+  - "*.json"
+  - pnpm-lock.yaml
+  - vite.config*.ts
+  - tsconfig*.json
+  - components.json
+  - deploy-pages.sh
+  - ideas.md
