@@ -306,6 +306,47 @@
     to { transform: translateX(-50%); }
   }
 
+  /* Anchor offset for sticky header */
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+
+  /* Yellow-400 opacity helpers (used inline bg) */
+  .bg-yellow-400\/8 { background-color: rgba(229,170,0,0.08); }
+  .bg-white\/8 { background-color: rgba(255,255,255,0.08); }
+  .border-white\/8 { border-color: rgba(255,255,255,0.08); }
+  .divide-white\/8 > * + * { border-color: rgba(255,255,255,0.08); }
+
+  /* Form inputs */
+  .form-input {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    outline: none;
+    transition: border-color 150ms ease, background 150ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .form-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .form-input:focus {
+    border-color: #e5aa00;
+    background: rgba(229, 170, 0, 0.05);
+    box-shadow: 0 0 0 3px rgba(229, 170, 0, 0.15);
+  }
+
+  .form-input option {
+    background: #1a1a18;
+    color: white;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
