@@ -1,7 +1,7 @@
 import { BUSINESS } from "@/config"
 import { Phone, Mail, ArrowUpRight } from "lucide-react"
 
-const logoUrl = "/een-logo.png"
+const logoUrl = `${import.meta.env.BASE_URL}een-logo.png`
 
 const FOOTER_SERVICES = [
   "Full Unit Turnarounds",
