@@ -39,7 +39,7 @@ export const FAQ_ITEMS: FAQItem[] = [
     id: "service-area",
     question: "What areas of Maryland do you serve?",
     answer:
-      "EEN Construction serves multifamily properties across Maryland. Current service counties include Montgomery, Prince George's, Baltimore City, Baltimore County, Anne Arundel, Howard, and Frederick. Contact us to confirm coverage for your specific location.",
+      "EEN Construction currently serves multifamily properties in Montgomery County and Prince George's County, Maryland. Contact us to confirm coverage for your specific location.",
   },
   {
     id: "how-to-request",

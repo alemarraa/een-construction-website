@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
 
-TOKEN="$1"
+TOKEN="${GITHUB_TOKEN}"
 REPO="alemarraa/een-construction-website"
 REMOTE="https://alemarraa:${TOKEN}@github.com/${REPO}.git"
 ROOT="/Users/alessandromarra/een-construction-website"
 
 if [ -z "$TOKEN" ]; then
-  echo "Usage: ./deploy-pages.sh YOUR_GITHUB_TOKEN"
+  echo "Error: GITHUB_TOKEN environment variable is not set."
+  echo "Usage: GITHUB_TOKEN=<token> ./deploy-pages.sh"
   exit 1
 fi
 

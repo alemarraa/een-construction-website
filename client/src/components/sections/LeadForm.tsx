@@ -35,28 +35,27 @@ export default function LeadForm() {
 
   const onSubmit = async (data: FormData) => {
     setStatus("loading")
+
+    const formspreeId = import.meta.env.VITE_FORMSPREE_ID
+
+    // In a production build without the secret configured, bail immediately.
+    // This prevents a misleading 404 to /api/contact on static hosting.
+    if (!formspreeId && import.meta.env.PROD) {
+      setStatus("error")
+      return
+    }
+
+    const endpoint = formspreeId
+      ? `https://formspree.io/f/${formspreeId}`
+      : "/api/contact" // local-dev Express fallback only
+
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(data),
       })
-      // 404 means static hosting (GitHub Pages) — fall back to Gmail compose
-      if (res.status === 404) {
-        const subject = encodeURIComponent(`Unit Turnaround Request — ${data.address}`)
-        const body = encodeURIComponent(
-          `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone || "—"}\nUnit Count: ${data.unitCount}\nAddress: ${data.address}\nPreferred Contact: ${data.preferredContact}\n\nWork Needed:\n${data.workNeeded}`
-        )
-        window.open(
-          `https://mail.google.com/mail/?view=cm&to=${BUSINESS.email}&su=${subject}&body=${body}`,
-          "_blank",
-          "noopener,noreferrer"
-        )
-        setStatus("success")
-        reset()
-        return
-      }
-      if (!res.ok) throw new Error("Server error")
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       setStatus("success")
       reset()
     } catch {
@@ -239,6 +238,9 @@ export default function LeadForm() {
 
                 <p className="text-center text-xs font-semibold text-stone-600">
                   We respond within one business day. 4+ unit properties only.
+                </p>
+                <p className="text-center text-[0.65rem] leading-5 text-stone-700">
+                  Your information is used solely to respond to your request and will never be sold or shared with third parties.
                 </p>
               </form>
             )}
