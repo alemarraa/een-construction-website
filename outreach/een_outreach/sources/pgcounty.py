@@ -29,6 +29,20 @@ logger = logging.getLogger(__name__)
 SDAT_BASE = "https://opendata.maryland.gov/resource"
 PG_DATASET_ID = "w3eb-4mzd"
 
+# Correct field names from the actual dataset schema
+_LU_FIELD = "land_use_code_mdp_field_lu_desclu_sdat_field_50"
+_DW_FIELD = "additional_c_a_m_a_data_dwelling_type_mdp_field_strubldg_sdat_field_265"
+_UNITS_FIELD = "c_a_m_a_system_data_number_of_dwelling_units_mdp_field_bldg_units_sdat_field_239"
+_ADDR_NUM_FIELD = "premise_address_number_mdp_field_premsnum_sdat_field_20"
+_ADDR_NAME_FIELD = "premise_address_name_mdp_field_premsnam_sdat_field_23"
+_ADDR_TYPE_FIELD = "premise_address_type_mdp_field_premstyp_sdat_field_24"
+_CITY_FIELD = "premise_address_city_mdp_field_premcity_sdat_field_25"
+_ZIP_FIELD = "premise_address_zip_code_mdp_field_premzip_sdat_field_26"
+_ACCOUNT_FIELD = "parent_account_number_account_number_sdat_field_388"
+_COUNTY_FIELD = "county_name_mdp_field_cntyname"
+_YEAR_BUILT_FIELD = "c_a_m_a_system_data_year_built_yyyy_mdp_field_yearblt_sdat_field_235"
+_IMPROVEMENTS_FIELD = "current_cycle_data_improvements_value_mdp_field_names_nfmimpvl_curimpvl_and_salimpvl_sdat_field_165"
+
 # SDAT land-use codes that typically indicate multifamily rental properties
 MULTIFAMILY_LU_CODES = {
     "Apartments (A)",
@@ -50,15 +64,35 @@ MULTIFAMILY_CAMA_TYPES = {
 
 
 class PGCountySDATSource(BaseSource):
-    """Fetches Prince George's County multifamily properties from SDAT open data."""
+    """Fetches Prince George's County multifamily properties from SDAT open data.
+
+    Requires a free Socrata app token from https://opendata.maryland.gov to bypass
+    Cloudflare bot-protection on filtered queries. Set SOCRATA_APP_TOKEN in .env.
+    Without a token, filtered queries return 403 and the source is marked unavailable.
+    """
 
     name = "pgcounty_sdat"
     county = "prince_georges"
 
+    def __init__(self):
+        from ..config import get_settings
+        self._app_token = get_settings().socrata_app_token
+
+    def _headers(self) -> dict:
+        if self._app_token:
+            return {"X-App-Token": self._app_token}
+        return {}
+
     def is_available(self) -> bool:
+        """Returns True only if filtered queries succeed (requires App Token)."""
         try:
             url = f"{SDAT_BASE}/{PG_DATASET_ID}.json"
-            r = httpx.get(url, params={"$limit": 1}, timeout=10)
+            r = httpx.get(
+                url,
+                params={f"$where": f"{_LU_FIELD} like '%Apartment%'", "$limit": 1},
+                headers=self._headers(),
+                timeout=10,
+            )
             return r.status_code == 200
         except Exception:
             return False
@@ -69,16 +103,11 @@ class PGCountySDATSource(BaseSource):
     def _fetch_from_api(self) -> Iterator[RawProperty]:
         url = f"{SDAT_BASE}/{PG_DATASET_ID}.json"
 
-        # Filter to likely multifamily: Apartments land-use code
-        # The field name in this dataset is extremely long
-        lu_field = "land_use_code_mdp_field_lu_desclu_sdat_field_50"
-        dwelling_field = "additional_c_a_m_a_data_dwelling_type_mdp_field_strubldg_sdat_field_265"
-
         where = (
-            f"{lu_field} like '%Apartment%' OR "
-            f"{lu_field} like '%Multi%' OR "
-            f"{dwelling_field} like '%Apartment%' OR "
-            f"{dwelling_field} like '%Multi%'"
+            f"{_LU_FIELD} like '%Apartment%' OR "
+            f"{_LU_FIELD} like '%Multi%' OR "
+            f"{_DW_FIELD} like '%Apartment%' OR "
+            f"{_DW_FIELD} like '%Multi%'"
         )
 
         limit = 1000
@@ -89,10 +118,10 @@ class PGCountySDATSource(BaseSource):
                 "$where": where,
                 "$limit": limit,
                 "$offset": offset,
-                "$order": "parent_account_number_account_number_sdat_field_388 ASC",
+                "$order": f"{_ACCOUNT_FIELD} ASC",
             }
             try:
-                r = httpx.get(url, params=params, timeout=45)
+                r = httpx.get(url, params=params, headers=self._headers(), timeout=45)
                 r.raise_for_status()
                 batch = r.json()
                 if not batch:
@@ -111,47 +140,42 @@ class PGCountySDATSource(BaseSource):
                 break
 
     def _parse_sdat_record(self, rec: dict) -> RawProperty | None:
-        # Extract key fields (SDAT uses extremely verbose field names)
-        county_name = rec.get("county_name_mdp_field_cntyname", "")
+        county_name = rec.get(_COUNTY_FIELD, "")
         if "Prince George" not in county_name:
             return None
 
-        # Address
-        addr_field = "premise_address_street_name_mdp_field_premaddr_sdat_field_20"
-        street_num = rec.get("premise_address_street_number_mdp_field_premno_sdat_field_17", "")
-        street_name = rec.get(addr_field, "")
-        city = rec.get("premise_address_city_mdp_field_premcity_sdat_field_25", "")
-        zip_code = rec.get("premise_address_zip_code_mdp_field_premzip_sdat_field_26", "")
-
-        street = f"{street_num} {street_name}".strip()
+        # Build street address from number + name + type
+        addr_num = rec.get(_ADDR_NUM_FIELD, "").strip()
+        addr_name = rec.get(_ADDR_NAME_FIELD, "").strip()
+        addr_type = rec.get(_ADDR_TYPE_FIELD, "").strip()
+        street = " ".join(part for part in [addr_num, addr_name, addr_type] if part)
         if not street or street == "0":
             return None
 
-        # Owner
-        owner = rec.get("owner_name_1_mdp_field_ownname1_sdat_field_30", "")
-
-        # Dwelling type for property classification
-        dwelling_type = rec.get(
-            "additional_c_a_m_a_data_dwelling_type_mdp_field_strubldg_sdat_field_265", ""
-        )
+        city = rec.get(_CITY_FIELD, "").strip() or None
+        zip_code = rec.get(_ZIP_FIELD, "").strip()
+        dwelling_type = rec.get(_DW_FIELD, "").strip()
         property_type = self._map_property_type(dwelling_type)
+        account_number = rec.get(_ACCOUNT_FIELD, "").strip()
 
-        # Unit count: SDAT doesn't reliably carry this; mark estimated
-        # Use improvements value as a proxy signal for confidence
-        improvements = int(
-            rec.get("current_cycle_data_improvements_value_mdp_field_names_nfmimpvl_curimpvl_and_salimpvl_sdat_field_165", 0) or 0
-        )
-        has_improvements = improvements > 10000
+        # Unit count from CAMA if available
+        raw_units = rec.get(_UNITS_FIELD, "")
+        try:
+            unit_count = int(raw_units) if raw_units else None
+        except (ValueError, TypeError):
+            unit_count = None
 
-        # Tax account number
-        account_number = rec.get(
-            "parent_account_number_account_number_sdat_field_388", ""
-        )
+        improvements = 0
+        try:
+            improvements = int(rec.get(_IMPROVEMENTS_FIELD, 0) or 0)
+        except (ValueError, TypeError):
+            pass
+        has_improvements = improvements > 10_000
 
         confidence = 0.4
         if has_improvements:
             confidence += 0.1
-        if owner:
+        if unit_count:
             confidence += 0.1
 
         return RawProperty(
@@ -159,20 +183,19 @@ class PGCountySDATSource(BaseSource):
             source_url=f"https://opendata.maryland.gov/resource/{PG_DATASET_ID}.json",
             county="prince_georges",
             street_address=street,
-            city=city.strip() or None,
+            city=city,
             zip_code=zip_code[:5] if zip_code else None,
             property_type=property_type,
             structure_type=dwelling_type or None,
-            unit_count=None,
-            unit_count_is_estimated=True,
-            unit_count_confidence=0.2,
-            unit_count_source="sdat_dwelling_type_inference",
+            unit_count=unit_count,
+            unit_count_is_estimated=unit_count is None,
+            unit_count_confidence=0.7 if unit_count else 0.2,
+            unit_count_source="sdat_cama_units" if unit_count else "sdat_dwelling_type_inference",
             tax_id=account_number or None,
-            owner_entity=owner.strip() or None,
             data_confidence=round(confidence, 2),
             notes=(
                 f"SDAT record. Dwelling type: {dwelling_type or 'unknown'}. "
-                f"Unit count not available in source; requires manual verification."
+                f"{'Unit count from CAMA.' if unit_count else 'Unit count not in source; verify manually.'}"
             ),
             raw=rec,
         )

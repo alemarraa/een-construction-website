@@ -29,7 +29,10 @@ def _get_jinja() -> Environment:
 
 def _html_to_text(html_body: str) -> str:
     """Very lightweight HTML → plain-text fallback."""
-    text = re.sub(r"<br\s*/?>", "\n", html_body, flags=re.IGNORECASE)
+    # Strip <style> and <head> blocks entirely
+    text = re.sub(r"<style[^>]*>.*?</style>", "", html_body, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<head[^>]*>.*?</head>", "", text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
     text = re.sub(r"</p>", "\n\n", text, flags=re.IGNORECASE)
     text = re.sub(r"</li>", "\n", text, flags=re.IGNORECASE)
     text = re.sub(r"<li[^>]*>", "• ", text, flags=re.IGNORECASE)
@@ -133,12 +136,12 @@ def compose_all(
     threshold = min_lead_score if min_lead_score is not None else cfg.min_lead_score
 
     # Properties that qualify and have no existing campaign yet
-    subq = db.query(EmailCampaign.property_id).distinct().subquery()
+    already_campaigned = db.query(EmailCampaign.property_id).distinct()
 
     props = (
         db.query(Property)
         .filter(Property.qualifies.is_(True), Property.lead_score >= threshold)
-        .filter(Property.id.not_in(subq))
+        .filter(~Property.id.in_(already_campaigned))
         .all()
     )
 
