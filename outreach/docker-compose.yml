@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  outreach:
+    build: .
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+    command: run-all
+
+  outreach-report:
+    build: .
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+    command: report --format daily
+    profiles: [report]

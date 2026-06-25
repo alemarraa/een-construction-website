@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Arial, sans-serif; font-size: 15px; color: #222; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; }
+  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 13px; color: #666; }
+  .unsubscribe { margin-top: 8px; font-size: 12px; }
+  ul { margin: 12px 0; padding-left: 20px; }
+  li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<p>Hi {% if first_name %}{{ first_name }}{% else %}Property Management Team{% endif %},</p>
+
+<p>My name is {{ sender_name }}, and I'm reaching out from {{ business_name }}.
+We provide construction, repair, and turnover support for rental properties in
+{% if county == "montgomery" %}Montgomery County{% elif county == "prince_georges" %}Prince George's County{% else %}Montgomery County and Prince George's County{% endif %}.</p>
+
+{% if personalization_line %}
+<p>{{ personalization_line }}</p>
+{% endif %}
+
+<p>Our services include:</p>
+<ul>
+  <li>Interior painting and touch-ups</li>
+  <li>Drywall repair</li>
+  <li>Flooring installation and replacement</li>
+  <li>Fixture and hardware replacement</li>
+  <li>Punch-list repairs</li>
+  <li>Cosmetic renovations</li>
+  <li>Rental unit turns</li>
+  <li>General property-maintenance support</li>
+  <li>Cleanup and preparation between tenants</li>
+</ul>
+
+<p>{{ business_name }} is insured, and our W-9 is ready for vendor onboarding.
+We would appreciate the opportunity to be considered for upcoming turns, repairs,
+maintenance work, or renovation projects at the properties your team manages.</p>
+
+<p>Would you be the correct person to speak with about becoming an approved vendor?
+If not, I would appreciate it if you could direct me to the appropriate contact.</p>
+
+<p>Thank you,</p>
+
+<p>
+  <strong>{{ sender_name }}</strong><br>
+  {{ business_name }}<br>
+  {{ business_phone }}<br>
+  {{ business_email }}<br>
+  {{ business_website }}
+</p>
+
+<div class="footer">
+  <p>{{ business_name }} · {{ physical_mailing_address }}</p>
+  <p>This is a business-services introduction sent to business contacts.</p>
+  <div class="unsubscribe">
+    To stop receiving emails from {{ business_name }},
+    <a href="{{ unsubscribe_url }}">click here to unsubscribe</a>
+    or reply with the word "unsubscribe."
+  </div>
+</div>
+
+</body>
+</html>
