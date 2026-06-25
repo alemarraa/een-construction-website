@@ -6,7 +6,7 @@ import { defineConfig } from "vite"
 // Clean Vite config for GitHub Pages — no Manus-specific plugins
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/een-construction-website/",
+  base: "/",
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

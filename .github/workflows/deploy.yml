@@ -30,6 +30,7 @@ jobs:
           cp index.html _site/
           cp een-logo.png _site/
           cp .nojekyll _site/
+          cp CNAME _site/
           cp -r assets _site/assets
 
       - name: Upload Pages artifact
