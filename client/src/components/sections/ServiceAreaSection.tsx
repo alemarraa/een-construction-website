@@ -49,9 +49,8 @@ export default function ServiceAreaSection() {
           </div>
 
           {/* ── RIGHT: Counties ── */}
-          <div>
-            {/* Maryland label */}
-            <div className="mb-6 flex items-center gap-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
               <div className="h-px flex-1 bg-white/10" aria-hidden="true" />
               <span className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-stone-600">
                 Active Service Counties
@@ -59,36 +58,44 @@ export default function ServiceAreaSection() {
               <div className="h-px flex-1 bg-white/10" aria-hidden="true" />
             </div>
 
-            <ul
-              className="grid grid-cols-1 gap-px bg-white/8 sm:grid-cols-2"
-              role="list"
-              aria-label="Served Maryland counties"
-            >
+            <ul className="flex flex-col gap-4" role="list" aria-label="Served Maryland counties">
               {SERVICE_COUNTIES.map((county, i) => (
                 <li
                   key={county.name}
-                  className={`group flex items-center gap-4 p-5 transition-colors duration-200 ${
-                    county.active
-                      ? "bg-[#111110] hover:bg-white/[0.05]"
-                      : "bg-[#111110] opacity-40"
-                  }`}
+                  className="border border-white/8 bg-[#111110] p-7 transition-colors duration-200 hover:border-yellow-400/20 hover:bg-white/[0.03]"
                 >
-                  {/* Index number */}
-                  <span className="font-display text-2xl font-black leading-none text-yellow-400/30 group-hover:text-yellow-400/60 transition-colors duration-200">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>
-                    <span className="block text-sm font-black uppercase tracking-[0.1em] text-white">
-                      {county.name}
-                    </span>
-                    {county.active && (
-                      <span className="mt-0.5 flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3 text-yellow-400" aria-hidden="true" />
-                        <span className="text-[0.6rem] font-black uppercase tracking-[0.14em] text-yellow-400">Active</span>
+                  {/* Header row */}
+                  <div className="mb-5 flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <span className="font-display text-4xl font-black leading-none text-yellow-400/20">
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-                    )}
-                  </span>
-                  {!county.active && <span className="sr-only">(coming soon)</span>}
+                      <span>
+                        <span className="block font-display text-xl font-black uppercase leading-tight tracking-tight text-white">
+                          {county.name}
+                        </span>
+                        <span className="mt-1 flex items-center gap-1.5">
+                          <MapPin className="h-3 w-3 text-yellow-400" aria-hidden="true" />
+                          <span className="text-[0.6rem] font-black uppercase tracking-[0.14em] text-yellow-400">Active</span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Cities */}
+                  <div>
+                    <p className="mb-3 text-[0.6rem] font-black uppercase tracking-[0.18em] text-stone-600">Areas Served</p>
+                    <div className="flex flex-wrap gap-2">
+                      {county.cities.map((city) => (
+                        <span
+                          key={city}
+                          className="border border-white/10 bg-white/[0.04] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-stone-400"
+                        >
+                          {city}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>

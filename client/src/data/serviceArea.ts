@@ -1,12 +1,20 @@
 export interface ServiceCounty {
   name: string
   active: boolean
+  cities: string[]
 }
 
-// Update when coverage is confirmed for each county
 export const SERVICE_COUNTIES: ServiceCounty[] = [
-  { name: "Montgomery County", active: true },
-  { name: "Prince George's County", active: true },
+  {
+    name: "Montgomery County",
+    active: true,
+    cities: ["Silver Spring", "Rockville", "Bethesda", "Gaithersburg", "Germantown", "Wheaton", "Takoma Park", "Aspen Hill"],
+  },
+  {
+    name: "Prince George's County",
+    active: true,
+    cities: ["Hyattsville", "College Park", "Laurel", "Greenbelt", "Bowie", "Langley Park", "Capitol Heights", "Landover"],
+  },
 ]
 
 export const SERVICE_AREA_NOTE =
