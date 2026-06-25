@@ -26,7 +26,7 @@ export default function ServiceAreaSection() {
               Coverage.
             </h2>
             <p className="mb-8 max-w-sm text-base font-semibold leading-8 text-stone-400">
-              We serve multifamily rental properties across Maryland. Contact us to confirm coverage for your specific location.
+              Currently serving Montgomery County and Prince George's County. More counties coming as we grow.
             </p>
 
             {/* CTA card */}
