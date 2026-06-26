@@ -34,7 +34,15 @@ class Settings(BaseSettings):
     business_phone: str = ""
     business_website: str = ""
     physical_mailing_address: str = ""
+    # Base URL for the website hosting the unsubscribe endpoint (e.g. https://eenconstruction.com)
+    # Per-email links are built as: {unsubscribe_url}/unsubscribe?t={hmac_token}
     unsubscribe_url: str = ""
+    # Secret for HMAC-signed unsubscribe tokens — generate with: python3 -c "import secrets; print(secrets.token_hex(32))"
+    unsubscribe_secret: str = ""
+
+    # ── Upstash Redis (suppression sync for deployed unsubscribe endpoint) ──
+    upstash_redis_url: str = ""
+    upstash_redis_token: str = ""
 
     # ── Email provider ────────────────────────────────────────────────────
     email_provider: Literal["resend", "sendgrid", "postmark", "smtp"] = "resend"

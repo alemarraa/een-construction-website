@@ -295,6 +295,7 @@ class EmailCampaign(Base):
     body_text: Mapped[Optional[str]] = mapped_column(Text)
     personalization_notes: Mapped[Optional[str]] = mapped_column(Text)
     dry_run: Mapped[bool] = mapped_column(Boolean, default=True)
+    unsubscribe_token: Mapped[Optional[str]] = mapped_column(String(200), unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     queued_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))

@@ -4,63 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: Arial, sans-serif; font-size: 15px; color: #222; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; }
-  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 13px; color: #666; }
-  .unsubscribe { margin-top: 8px; font-size: 12px; }
-  ul { margin: 12px 0; padding-left: 20px; }
-  li { margin-bottom: 4px; }
+  body { font-family: Arial, sans-serif; font-size: 15px; color: #222; line-height: 1.65; max-width: 580px; margin: 0 auto; padding: 20px; }
+  .footer { margin-top: 28px; padding-top: 14px; border-top: 1px solid #ddd; font-size: 12px; color: #777; }
+  .sig { margin-top: 20px; }
 </style>
 </head>
 <body>
 
-<p>Hi {% if first_name %}{{ first_name }}{% else %}Property Management Team{% endif %},</p>
+<p>Hi {% if first_name %}{{ first_name }}{% else %}there{% endif %},</p>
 
-<p>My name is {{ sender_name }}, and I'm reaching out from {{ business_name }}.
-We provide construction, repair, and turnover support for rental properties in
-{% if county == "montgomery" %}Montgomery County{% elif county == "prince_georges" %}Prince George's County{% else %}Montgomery County and Prince George's County{% endif %}.</p>
+<p>My name is {{ sender_name }} — I run {{ business_name }}, a small construction crew based in Bethesda that does unit turns, punch-list work, and ongoing maintenance for rental properties in {% if county == "montgomery" %}Montgomery County{% elif county == "prince_georges" %}Prince George's County{% else %}Montgomery and Prince George's Counties{% endif %}.</p>
 
 {% if personalization_line %}
 <p>{{ personalization_line }}</p>
 {% endif %}
 
-<p>Our services include:</p>
-<ul>
-  <li>Interior painting and touch-ups</li>
-  <li>Drywall repair</li>
-  <li>Flooring installation and replacement</li>
-  <li>Fixture and hardware replacement</li>
-  <li>Punch-list repairs</li>
-  <li>Cosmetic renovations</li>
-  <li>Rental unit turns</li>
-  <li>General property-maintenance support</li>
-  <li>Cleanup and preparation between tenants</li>
-</ul>
+<p>We handle the work that comes up repeatedly between tenants and during renovations: painting, drywall, flooring, fixture and hardware replacement, and general cosmetic repairs. We're insured, and our W-9 is on file and ready for vendor onboarding.</p>
 
-<p>{{ business_name }} is insured, and our W-9 is ready for vendor onboarding.
-We would appreciate the opportunity to be considered for upcoming turns, repairs,
-maintenance work, or renovation projects at the properties your team manages.</p>
+<p>Would you be willing to pass this along to whoever handles vendor approvals or maintenance scheduling? Or if that's you, I'd love to connect about any upcoming turns or repairs — even just getting on your approved-vendor list would be great.</p>
 
-<p>Would you be the correct person to speak with about becoming an approved vendor?
-If not, I would appreciate it if you could direct me to the appropriate contact.</p>
-
-<p>Thank you,</p>
-
-<p>
-  <strong>{{ sender_name }}</strong><br>
-  {{ business_name }}<br>
-  {{ business_phone }}<br>
-  {{ business_email }}<br>
-  {{ business_website }}
-</p>
+<div class="sig">
+<p>Thanks,<br>
+<strong>{{ sender_name }}</strong><br>
+{{ business_name }}<br>
+{{ business_phone }}<br>
+{{ business_email }}</p>
+</div>
 
 <div class="footer">
-  <p>{{ business_name }} · {{ physical_mailing_address }}</p>
-  <p>This is a business-services introduction sent to business contacts.</p>
-  <div class="unsubscribe">
-    To stop receiving emails from {{ business_name }},
-    <a href="{{ unsubscribe_url }}">click here to unsubscribe</a>
-    or reply with the word "unsubscribe."
-  </div>
+  {{ business_name }} &middot; {{ physical_mailing_address }}<br>
+  <small>
+    This is a one-time business introduction. To opt out permanently,
+    <a href="{{ unsubscribe_url }}">click here</a> or reply with "unsubscribe" and you won't hear from us again.
+  </small>
 </div>
 
 </body>

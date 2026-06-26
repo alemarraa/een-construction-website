@@ -43,24 +43,25 @@ def _html_to_text(html_body: str) -> str:
 
 
 def _build_personalization_line(prop: Property, org: Organization | None) -> str:
-    """One sentence personalised to the property / org."""
+    """One sentence tied to the specific property — no generic filler."""
+    city = (prop.city or prop.county.replace("_", " ").title()).title()
     if prop.unit_count and not prop.unit_count_is_estimated:
         n = prop.unit_count
+        addr = prop.street_address.title()
+        if org and org.name:
+            return (
+                f"I came across the {n}-unit property at {addr} while looking at "
+                f"rental communities in {city} and wanted to reach out about "
+                f"supporting your team with turns and maintenance work."
+            )
         return (
-            f"I noticed that {org.name if org else 'your portfolio'} manages a "
-            f"{n}-unit rental community in {prop.city or prop.county.title()} and "
-            f"wanted to introduce EEN Construction as a local service partner."
+            f"I came across the {n}-unit building at {addr} and wanted to reach out "
+            f"about supporting your team with unit turns and maintenance work in {city}."
         )
-    if org:
-        return (
-            f"I came across {org.name} while researching rental-property managers "
-            f"in {prop.city or prop.county.title()} and wanted to introduce "
-            f"EEN Construction as a local service partner."
-        )
-    city = prop.city or prop.county.title()
+    addr = prop.street_address.title()
     return (
-        f"I noticed this rental property in {city} and wanted to reach out about "
-        f"becoming a trusted local contractor for your team."
+        f"I came across the rental property at {addr} in {city} and wanted to "
+        f"reach out about supporting your team with turns and maintenance work."
     )
 
 
@@ -87,10 +88,17 @@ def compose_draft(
     first_name = contact.first_name
     personalization_line = _build_personalization_line(prop, org)
 
-    subject = (
-        f"Vendor introduction — construction & turnover support for "
-        f"{prop.city or (prop.county or 'your area').title()} properties"
-    )
+    city = (prop.city or prop.county.replace("_", " ").title()).title()
+    if prop.unit_count and not prop.unit_count_is_estimated:
+        subject = f"Quick question — unit turns and maintenance at {prop.street_address.title()}"
+    else:
+        subject = f"Quick question — contractor support for your {city} properties"
+
+    from ..unsub_token import generate_token, generate_secret
+    secret = cfg.unsubscribe_secret or generate_secret()
+    token = generate_token(contact.email or "", secret)
+    base = cfg.unsubscribe_url.rstrip("/")
+    unsubscribe_token_url = f"{base}/unsubscribe?t={token}"
 
     template = _get_jinja().get_template("outreach_intro.html.jinja2")
     body_html = template.render(
@@ -101,7 +109,7 @@ def compose_draft(
         business_phone=cfg.business_phone,
         business_website=cfg.business_website,
         physical_mailing_address=cfg.physical_mailing_address,
-        unsubscribe_url=cfg.unsubscribe_url,
+        unsubscribe_url=unsubscribe_token_url,
         county=prop.county,
         personalization_line=personalization_line,
     )
@@ -118,6 +126,7 @@ def compose_draft(
         body_text=body_text,
         personalization_notes=personalization_line,
         dry_run=cfg.dry_run,
+        unsubscribe_token=token,
     )
     db.add(campaign)
     db.flush()

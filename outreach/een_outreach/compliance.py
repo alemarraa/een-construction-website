@@ -28,23 +28,36 @@ class ComplianceResult:
 
 
 def is_suppressed(db: Session, email: str) -> bool:
-    """Return True if the email or its domain is suppression-listed."""
-    row = (
-        db.query(SuppressionList)
-        .filter(SuppressionList.email == email.lower())
-        .first()
-    )
+    """Return True if the email or its domain is in the local SQLite suppression list
+    or in the deployed Upstash Redis suppression store."""
+    e = email.lower()
+    row = db.query(SuppressionList).filter(SuppressionList.email == e).first()
     if row:
         return True
-    domain = email.split("@")[-1].lower() if "@" in email else ""
+    domain = e.split("@")[-1] if "@" in e else ""
     if domain:
-        row = (
-            db.query(SuppressionList)
-            .filter(SuppressionList.domain == domain)
-            .first()
-        )
+        row = db.query(SuppressionList).filter(SuppressionList.domain == domain).first()
         if row:
             return True
+    # Check Upstash Redis (deployed unsubscribes)
+    if _upstash_is_suppressed(e):
+        return True
+    return False
+
+
+def _upstash_is_suppressed(email: str) -> bool:
+    """Check Upstash Redis for a suppression entry. Returns False on any error."""
+    cfg = get_settings()
+    if not cfg.upstash_redis_url or not cfg.upstash_redis_token:
+        return False
+    try:
+        import httpx
+        url = f"{cfg.upstash_redis_url.rstrip('/')}/get/suppression:{email}"
+        r = httpx.get(url, headers={"Authorization": f"Bearer {cfg.upstash_redis_token}"}, timeout=3)
+        if r.status_code == 200:
+            return r.json().get("result") is not None
+    except Exception as exc:
+        logger.debug("Upstash suppression check failed: %s", exc)
     return False
 
 
@@ -265,8 +278,8 @@ def check_send_compliance(
     # CAN-SPAM: must include physical address and unsubscribe URL in body
     if cfg.physical_mailing_address not in (campaign.body_html or ""):
         return ComplianceResult(False, "physical mailing address missing from email body")
-    if cfg.unsubscribe_url not in (campaign.body_html or ""):
-        return ComplianceResult(False, "unsubscribe URL missing from email body")
+    if "/unsubscribe?t=" not in (campaign.body_html or ""):
+        return ComplianceResult(False, "unsubscribe token URL missing from email body")
 
     return ComplianceResult(True, "all checks passed")
 
