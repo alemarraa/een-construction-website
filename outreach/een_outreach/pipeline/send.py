@@ -85,13 +85,14 @@ def _send_one(
         db.flush()
         return
 
+    from_addr = cfg.from_email or cfg.business_email
     result = sender.send(
         to_email=contact.email,
         to_name=contact.full_name,
         subject=campaign.subject,
         body_html=campaign.body_html or "",
         body_text=campaign.body_text or "",
-        from_email=cfg.business_email,
+        from_email=from_addr,
         from_name=cfg.sender_name,
         reply_to=cfg.business_email,
         unsubscribe_url=cfg.unsubscribe_url,

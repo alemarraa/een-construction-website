@@ -342,4 +342,19 @@ def can_spam_checklist(cfg=None) -> list[tuple[str, bool, str]]:
             True,
             f"Stop at bounce≥{cfg.bounce_rate_stop:.0%} / complaint≥{cfg.complaint_rate_stop:.1%}",
         ),
+        (
+            "Resend API key configured",
+            bool(cfg.resend_api_key),
+            "[SET]" if cfg.resend_api_key else "MISSING — run setup_keys.py",
+        ),
+        (
+            "Verified FROM email domain",
+            bool(cfg.from_email),
+            cfg.from_email or f"MISSING — set FROM_EMAIL (current fallback: {cfg.business_email})",
+        ),
+        (
+            "Resend webhook secret configured",
+            bool(cfg.resend_webhook_secret),
+            "[SET]" if cfg.resend_webhook_secret else "MISSING — configure webhook in Resend dashboard",
+        ),
     ]

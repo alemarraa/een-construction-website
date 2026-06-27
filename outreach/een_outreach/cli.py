@@ -334,6 +334,81 @@ def compliance() -> None:
     console.print(t)
 
 
+# ── send-test ─────────────────────────────────────────────────────────────
+
+
+@cli.command("send-test")
+@click.option("--to", "to_email", default=None, help="Override recipient (defaults to BUSINESS_EMAIL)")
+def send_test(to_email: str | None) -> None:
+    """Send exactly one test email to the business email address.
+
+    Bypasses DRY_RUN / SEND_ENABLED — for provider validation only.
+    Never sends to leads.
+    """
+    from .config import get_settings
+    from .email_sender.resend import get_sender
+    from .unsub_token import generate_token
+
+    cfg = get_settings()
+
+    if not cfg.resend_api_key:
+        console.print("[red]RESEND_API_KEY not set — cannot send test email")
+        raise SystemExit(1)
+
+    recipient = to_email or cfg.business_email
+    if not recipient:
+        console.print("[red]No recipient — set BUSINESS_EMAIL or pass --to")
+        raise SystemExit(1)
+
+    from_addr = cfg.from_email or cfg.business_email
+    sender = get_sender()
+
+    # Build a real unsubscribe token for the test
+    token = generate_token(recipient, cfg.unsubscribe_secret or "test-secret")
+    unsub_url = f"{cfg.unsubscribe_url.rstrip('/')}/unsubscribe?t={token}"
+
+    body_html = f"""
+<p>Hi,</p>
+<p>This is a <strong>test email</strong> from EEN Construction outreach system.</p>
+<p>Sender: {cfg.sender_name} &lt;{from_addr}&gt;<br>
+Reply-to: {cfg.business_email}<br>
+Unsubscribe: <a href="{unsub_url}">Click here</a></p>
+<p>Physical address: {cfg.physical_mailing_address}</p>
+<p style="font-size:11px;color:#999;">
+  {cfg.physical_mailing_address} |
+  <a href="{unsub_url}">Unsubscribe</a>
+</p>
+""".strip()
+
+    body_text = (
+        f"EEN Construction — test email\n\n"
+        f"Sender: {cfg.sender_name} <{from_addr}>\n"
+        f"Reply-to: {cfg.business_email}\n"
+        f"Unsubscribe: {unsub_url}\n\n"
+        f"{cfg.physical_mailing_address}"
+    )
+
+    console.print(f"[cyan]Sending test email from [bold]{from_addr}[/bold] to [bold]{recipient}[/bold]")
+
+    result = sender.send(
+        to_email=recipient,
+        to_name=None,
+        subject="[TEST] EEN Construction outreach system — provider check",
+        body_html=body_html,
+        body_text=body_text,
+        from_email=from_addr,
+        from_name=cfg.sender_name,
+        reply_to=cfg.business_email,
+        unsubscribe_url=unsub_url,
+    )
+
+    if result.success:
+        console.print(f"[green]✓ Sent — provider message ID: {result.provider_message_id}")
+    else:
+        console.print(f"[red]✗ Failed: {result.error}")
+        raise SystemExit(1)
+
+
 # ── suppress ──────────────────────────────────────────────────────────────
 
 

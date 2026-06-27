@@ -46,7 +46,11 @@ class Settings(BaseSettings):
 
     # ── Email provider ────────────────────────────────────────────────────
     email_provider: Literal["resend", "sendgrid", "postmark", "smtp"] = "resend"
+    # from_email: verified sending address (must match a domain verified in Resend)
+    # Falls back to business_email if unset.
+    from_email: str = ""
     resend_api_key: str = ""
+    resend_webhook_secret: str = ""
     sendgrid_api_key: str = ""
     postmark_server_token: str = ""
     smtp_host: str = ""
