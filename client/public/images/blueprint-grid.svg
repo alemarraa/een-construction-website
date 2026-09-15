@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Architectural blueprint pattern">
+  <defs>
+    <pattern id="fine" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.10" stroke-width="1"/>
+    </pattern>
+    <pattern id="coarse" width="200" height="200" patternUnits="userSpaceOnUse">
+      <path d="M200 0H0V200" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1"/>
+    </pattern>
+    <g id="dimTick">
+      <path d="M0 -7V7" stroke="#e5aa00" stroke-opacity="0.55" stroke-width="1.5"/>
+    </g>
+  </defs>
+
+  <rect width="1600" height="900" fill="#0d0d0b"/>
+  <rect width="1600" height="900" fill="url(#fine)"/>
+  <rect width="1600" height="900" fill="url(#coarse)"/>
+
+  <!-- ── Unit plan A ── -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="3">
+    <rect x="150" y="150" width="560" height="420"/>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.42" stroke-width="2">
+    <!-- interior partitions -->
+    <path d="M430 150V330"/>
+    <path d="M150 380H430"/>
+    <path d="M430 380V570"/>
+    <path d="M560 380V570"/>
+    <!-- closet / bath fixtures -->
+    <rect x="600" y="200" width="70" height="50"/>
+    <rect x="600" y="280" width="70" height="70"/>
+    <path d="M470 420h60v110h-60z"/>
+  </g>
+  <!-- door swings -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.5">
+    <path d="M430 250A60 60 0 0 1 370 190"/>
+    <path d="M250 380A60 60 0 0 1 310 440"/>
+    <path d="M560 470A50 50 0 0 0 610 520"/>
+  </g>
+
+  <!-- dimension line under plan A -->
+  <g stroke="#e5aa00" stroke-opacity="0.45" stroke-width="1.5">
+    <path d="M150 620H710"/>
+  </g>
+  <use href="#dimTick" x="150" y="620"/>
+  <use href="#dimTick" x="430" y="620"/>
+  <use href="#dimTick" x="710" y="620"/>
+
+  <!-- ── Unit plan B (stacked / rotated) ── -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="3">
+    <rect x="900" y="110" width="520" height="300"/>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.4" stroke-width="2">
+    <path d="M1120 110V410"/>
+    <path d="M1120 260H1420"/>
+    <rect x="1290" y="140" width="90" height="60"/>
+    <rect x="940" y="320" width="120" height="60"/>
+  </g>
+  <g stroke="#e5aa00" stroke-opacity="0.4" stroke-width="1.5">
+    <path d="M900 460H1420"/>
+  </g>
+  <use href="#dimTick" x="900" y="460"/>
+  <use href="#dimTick" x="1120" y="460"/>
+  <use href="#dimTick" x="1420" y="460"/>
+
+  <!-- ── Wall section detail ── -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2">
+    <rect x="950" y="580" width="330" height="180"/>
+    <path d="M950 620H1280"/>
+    <path d="M950 720H1280"/>
+  </g>
+  <g stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5">
+    <path d="M960 630l20 20M990 630l20 20M1020 630l20 20M1050 630l20 20M1080 630l20 20M1110 630l20 20M1140 630l20 20M1170 630l20 20M1200 630l20 20M1230 630l20 20M1250 630l20 20"/>
+  </g>
+
+  <!-- ── Elevation strip ── -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="2">
+    <rect x="180" y="690" width="470" height="150"/>
+    <path d="M280 690v150M380 690v150M480 690v150M560 690v150"/>
+    <rect x="300" y="730" width="60" height="70"/>
+    <rect x="400" y="730" width="60" height="70"/>
+  </g>
+
+  <!-- section markers -->
+  <g fill="none" stroke="#e5aa00" stroke-opacity="0.45" stroke-width="1.5">
+    <circle cx="790" cy="300" r="22"/>
+    <path d="M790 278v44M768 300h44"/>
+    <circle cx="860" cy="690" r="18"/>
+    <path d="M860 672v36M842 690h36"/>
+  </g>
+
+  <!-- corner crop marks -->
+  <g stroke="#ffffff" stroke-opacity="0.3" stroke-width="2">
+    <path d="M60 60h60M60 60v60"/>
+    <path d="M1540 60h-60M1540 60v60"/>
+    <path d="M60 840h60M60 840v-60"/>
+    <path d="M1540 840h-60M1540 840v-60"/>
+  </g>
+</svg>
