@@ -1,8 +1,15 @@
-const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/310519663631220129/JbGuF4MxgbkqoTFViqS9mu"
+// Site imagery is self-hosted from client/public/images so it ships with the
+// build. Do not point these at an external CDN — the previous host expired and
+// every photo on the site broke at once.
+//
+// To swap in a real photo: drop the file into client/public/images using the
+// same name (or update the path here) and rebuild. If a file is missing, the
+// SiteImage component renders a branded blueprint panel instead of a broken
+// image icon.
 
 export const IMAGES = {
-  hero: `${CDN}/een-hero-maryland-renovation-BNKote7WjDXWBgspsM8E4h.webp`,
-  services: `${CDN}/een-service-collage-8yJRhYVKPH8Qz7E9nQCNXQ.webp`,
-  blueprint: `${CDN}/een-blueprint-crane-pattern-HYGEJkJyGMrcgrjA5NHVvb.webp`,
-  worker: `${CDN}/een-worker-detail-9kscarc9bB42qkL27gDM5N.webp`,
+  hero: "/images/hero-unit-turnaround.jpg",
+  services: "/images/crew-turnaround.jpg",
+  blueprint: "/images/blueprint-grid.svg",
+  worker: "/images/tile-finish-detail.jpg",
 } as const
