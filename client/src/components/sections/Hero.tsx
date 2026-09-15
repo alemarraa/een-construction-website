@@ -1,5 +1,6 @@
 import { BUSINESS } from "@/config"
 import { IMAGES } from "@/data/images"
+import SiteImage from "@/components/ui/site-image"
 import { ArrowRight, Phone, Building2, Users, Wrench } from "lucide-react"
 
 const INFO_ITEMS = [
@@ -98,10 +99,11 @@ export default function Hero() {
           <div className="relative h-[min(82vh,720px)] w-full max-w-[560px]">
             {/* Yellow offset shadow */}
             <div className="absolute -bottom-4 -right-4 h-full w-full border-2 border-yellow-400/50" aria-hidden="true" />
-            <img
+            <SiteImage
               src={IMAGES.hero}
-              alt="EEN Construction team completing a multifamily unit turnaround in Maryland"
+              alt="Drywall finishing during a multifamily unit turnaround in Maryland"
               className="relative z-10 h-full w-full object-cover"
+              fallbackLabel="Multifamily Unit Turnarounds"
               loading="eager"
               fetchPriority="high"
             />
@@ -134,10 +136,10 @@ export default function Hero() {
 
       {/* Mobile: full-bleed image strip below content */}
       <div className="relative h-56 w-full overflow-hidden lg:hidden">
-        <img
+        <SiteImage
           src={IMAGES.hero}
           alt=""
-          aria-hidden="true"
+          decorative
           className="h-full w-full object-cover"
           loading="eager"
         />

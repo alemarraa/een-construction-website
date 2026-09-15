@@ -1,4 +1,5 @@
 import { IMAGES } from "@/data/images"
+import SiteImage from "@/components/ui/site-image"
 
 const STANDARDS = [
   "Dust control and surface protection on every job",
@@ -19,11 +20,11 @@ export default function WorkStandard() {
             <div className="relative h-full min-h-[400px]">
               {/* Offset shadow */}
               <div className="absolute -bottom-4 -left-4 h-full w-full border-2 border-[#11100d]" aria-hidden="true" />
-              <img
+              <SiteImage
                 src={IMAGES.worker}
                 alt="EEN Construction tile installation detail — clean finish work"
-                className="relative z-10 h-full w-full object-cover shadow-[16px_16px_0_rgba(0,0,0,0.18)]"
-                loading="lazy"
+                className="relative z-10 h-full w-full min-h-[400px] object-cover shadow-[16px_16px_0_rgba(0,0,0,0.18)]"
+                fallbackLabel={"Tile & Finish Work"}
               />
             </div>
 

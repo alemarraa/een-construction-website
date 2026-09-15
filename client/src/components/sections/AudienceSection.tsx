@@ -1,4 +1,5 @@
 import { IMAGES } from "@/data/images"
+import SiteImage from "@/components/ui/site-image"
 import { CheckCircle2 } from "lucide-react"
 
 const WHO_WE_SERVE = [
@@ -68,11 +69,11 @@ export default function AudienceSection() {
             <div className="relative">
               {/* Offset border */}
               <div className="absolute -bottom-4 -right-4 h-full w-full border-2 border-yellow-400" aria-hidden="true" />
-              <img
+              <SiteImage
                 src={IMAGES.services}
-                alt="EEN Construction multifamily unit turnaround work"
+                alt="Wall prep and finish work during a vacant unit turnaround"
                 className="relative z-10 h-[420px] w-full object-cover shadow-[16px_16px_0_rgba(0,0,0,.18)] lg:h-[540px]"
-                loading="lazy"
+                fallbackLabel="Unit Turnaround Work"
               />
               {/* Dark overlay gradient */}
               <div
